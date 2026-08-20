@@ -1,0 +1,21 @@
+Chess Lab
+Copyright (C) 2026 karim
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.
+
+Why GPL: the board renderer (chessground, from the Lichess project) is
+GPL-3.0-or-later and is linked into the front-end bundle, so the combined work
+inherits those terms. Stockfish is also GPL, but it runs as a separate process
+rather than linked code, and does not itself impose this.
+
+See THIRD-PARTY.md for the full component list.

@@ -1,0 +1,8 @@
+# Normalise line endings in the repo; check out native on Windows.
+* text=auto
+
+*.png binary
+*.ico binary
+*.icns binary
+*.db  binary
+*.exe binary

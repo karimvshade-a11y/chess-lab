@@ -1,0 +1,10 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+# Build inputs: large, re-downloadable, and not ours to redistribute.
+.assets/
+# Generated: `npm run puzzles`
+src-tauri/resources/puzzles.db
+# Generated: sidecar copy
+src-tauri/binaries/

@@ -1,0 +1,111 @@
+[Event "Italian Game"]
+[Site "Chess Lab"]
+[Family "e4 e5"]
+[PlayAs "White"]
+[Result "*"]
+
+1. e4 {The friendliest way to play 1.e4. Bishop eyes f7, c3 and d3 build a slow, solid centre you can push with d4 later.} e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d3 d6 6. O-O O-O *
+
+[Event "Ruy Lopez, Morphy Defence"]
+[Site "Chess Lab"]
+[Family "e4 e5"]
+[PlayAs "White"]
+[Result "*"]
+
+1. e4 {The most respected 1.e4 opening. Bb5 pressures the knight that defends e5; the a6/b5 chase gains time but loosens the queenside.} e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O *
+
+[Event "Scotch Game"]
+[Site "Chess Lab"]
+[Family "e4 e5"]
+[PlayAs "White"]
+[Result "*"]
+
+1. e4 {Rips the centre open immediately. Great if you hate memorising 20 moves of Ruy Lopez theory.} e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 *
+
+[Event "Sicilian Najdorf"]
+[Site "Chess Lab"]
+[Family "e4 c5"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. e4 {Black trades a wing pawn for a centre pawn and gets the half-open c-file. a6 stops Nb5 and prepares queenside expansion.} c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 *
+
+[Event "Caro-Kann, Classical"]
+[Site "Chess Lab"]
+[Family "e4 c6"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. e4 {Solid as a brick. Unlike the French, Black develops the light-squared bishop outside the pawn chain before playing e6.} c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 *
+
+[Event "French Defence"]
+[Site "Chess Lab"]
+[Family "e4 e6"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. e4 {Concede space, then hit the base of White's chain with c5 and f6. Your light-squared bishop is the problem piece.} e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 *
+
+[Event "Queen's Gambit Declined"]
+[Site "Chess Lab"]
+[Family "d4 d5"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. d4 {Not really a gambit: after dxc5 White regains the pawn. Declining with e6 keeps a rock-solid centre.} d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 *
+
+[Event "London System"]
+[Site "Chess Lab"]
+[Family "d4 d5"]
+[PlayAs "White"]
+[Result "*"]
+
+1. d4 {Same setup against almost anything. Get the bishop outside the pawn chain before e3 or you'll bury it.} d5 2. Nf3 Nf6 3. Bf4 e6 4. e3 c5 5. c3 Nc6 6. Nbd2 Bd6 *
+
+[Event "King's Indian Defence"]
+[Site "Chess Lab"]
+[Family "d4 Nf6"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. d4 {Hand White the centre, then blow it up. Black castles fast and storms the kingside with f5.} Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 *
+
+[Event "Nimzo-Indian"]
+[Site "Chess Lab"]
+[Family "d4 Nf6"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. d4 {Pin the knight, damage the structure, play on the light squares. A favourite of positional players.} Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 O-O 5. Bd3 d5 6. Nf3 c5 *
+
+[Event "Légal's Mate"]
+[Site "Chess Lab"]
+[Family "Traps"]
+[PlayAs "White"]
+[Result "*"]
+
+1. e4 {White gives up the queen to mate with three minor pieces. The trap springs because Black grabs the queen instead of taking the knight.} e5 2. Nf3 Nc6 3. Bc4 d6 4. Nc3 Bg4 5. h3 Bh5 6. Nxe5 Bxd1 7. Bxf7+ Ke7 8. Nd5# *
+
+[Event "Fried Liver Attack"]
+[Site "Chess Lab"]
+[Family "Traps"]
+[PlayAs "White"]
+[Result "*"]
+
+1. e4 {White sacs a knight to drag the king out. Black must know the Traxler or the Kd5 defence to survive.} e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. Nxf7 Kxf7 7. Qf3+ Ke6 8. Nc3 *
+
+[Event "Englund Gambit Trap"]
+[Site "Chess Lab"]
+[Family "Traps"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. d4 {The trap Black is hoping for. If White plays Qd2 the queen gets trapped on the back rank.} e5 2. dxe5 Nc6 3. Nf3 Qe7 4. Bf4 Qb4+ 5. Bd2 Qxb2 6. Bc3 Bb4 7. Qd2 Bxc3 8. Qxc3 Qc1# *
+
+[Event "Blackburne Shilling Trap"]
+[Site "Chess Lab"]
+[Family "Traps"]
+[PlayAs "Black"]
+[Result "*"]
+
+1. e4 {Named after the pennies Blackburne won with it. White's greed on f7 costs the game.} e5 2. Nf3 Nc6 3. Bc4 Nd4 4. Nxe5 Qg5 5. Nxf7 Qxg2 6. Rf1 Qxe4+ 7. Be2 Nf3# *
