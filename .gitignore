@@ -6,5 +6,7 @@ src-tauri/gen/
 .assets/
 # Generated: `npm run puzzles`
 src-tauri/resources/puzzles.db
-# Generated: sidecar copy
-src-tauri/binaries/
+# Generated: sidecar copy. The directory itself is tracked, because
+# `externalBin` resolves against it and `cp` into a missing folder fails.
+src-tauri/binaries/*
+!src-tauri/binaries/.gitkeep

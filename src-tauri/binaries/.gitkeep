@@ -1,0 +1,11 @@
+Place the Stockfish executable here, named for the build target:
+
+  stockfish-x86_64-pc-windows-msvc.exe     Windows
+  stockfish-x86_64-unknown-linux-gnu       Linux
+  stockfish-aarch64-apple-darwin           macOS (Apple silicon)
+
+Tauri's externalBin requires the target-triple suffix here, and strips it when
+bundling, so the installed app receives plain `stockfish.exe`. Both names are
+searched at runtime.
+
+See the README for which CPU build to pick.
