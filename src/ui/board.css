@@ -45,16 +45,16 @@ cg-board square.oc.move-dest {
 }
 .cg-wrap coords.files {
   left: 0;
-  bottom: -17px;
+  bottom: -32px;
   height: 16px;
   width: 100%;
   text-align: center;
 }
 .cg-wrap coords.ranks {
-  left: -16px;
+  left: -26px;
   top: 0;
   height: 100%;
-  width: 13px;
+  width: 14px;
   text-align: right;
 }
 .cg-wrap coords.ranks coord {

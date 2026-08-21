@@ -191,7 +191,7 @@ export default function Openings() {
         orientation={mySide === "w" ? "white" : "black"}
         onMove={onMove}
         lastMove={lastMove}
-        interactive={!done && pos.turn === mySide}
+        interactive={(freePlay ? !over : !done) && pos.turn === mySide}
         highlight={reveal && node ? [{ square: node.uci.slice(0, 2), brush: "yellow" }] : []}
       />
 
