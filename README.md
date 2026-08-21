@@ -94,6 +94,11 @@ frame, which also caps peak memory at one frame instead of the full ~1 GB.
 npm test
 ```
 
+- `test/imports.test.mjs` — every name a file calls or renders is imported or
+  declared. Vite will not tell you: an unimported identifier is just a free
+  variable, so the bundle builds and throws ReferenceError only when that line
+  finally runs. Two blank-screen bugs here were exactly this, and the test is
+  checked against both.
 - `test/perft.test.mjs` — move generation against the five standard perft
   positions, to depth 4.
 - `test/parsers.test.mjs` — every legal move's SAN round-trips through the

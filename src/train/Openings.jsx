@@ -5,11 +5,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Board from "../ui/Board.jsx";
 import { C, MONO, label, card } from "../ui/theme.js";
-import { legalMoves, uciOf, makeMove, sqName, parseFEN, isMate, inCheck, START_FEN } from "../engine/core.js";
+import {
+  legalMoves, uciOf, makeMove, sqName, toSAN, toFEN, parseFEN,
+  isMate, inCheck, isStalemate, insufficientMaterial, START_FEN,
+} from "../engine/core.js";
 import { parsePGN, mainline } from "../engine/pgn.js";
 import { playMove, play as sfx } from "../ui/sound.js";
 import { play as enginePlay, onDone, stop } from "../stockfish/client.js";
-import { toFEN, isStalemate, insufficientMaterial } from "../engine/core.js";
 import lessonsText from "../data/lessons.pgn?raw";
 
 function loadLessons(text) {
