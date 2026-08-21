@@ -2,12 +2,28 @@
 @import "chessground/assets/chessground.base.css";
 @import "chessground/assets/chessground.cburnett.css";
 
+/* Board colours come from variables so the set can be swapped at runtime.
+   Slate is the house palette; Wood is the classic tournament board. */
+:root,
+:root[data-board="slate"] {
+  --sq-light: #e7e2d5;
+  --sq-dark: #767ba0;
+  --board-edge: #2e3260;
+  --coord-ink: rgba(110, 107, 99, 0.95);
+}
+:root[data-board="wood"] {
+  --sq-light: #f0d9b5;
+  --sq-dark: #b58863;
+  --board-edge: #6b4a2f;
+  --coord-ink: rgba(107, 74, 47, 0.95);
+}
+
 /* A conic gradient tiles as true rectangles. Two 45deg linear gradients also
    produce a checkerboard, but their edges are diagonal, so every square shows
    a seam where the two layers meet. */
 cg-board {
-  background-color: #e7e2d5;
-  background-image: repeating-conic-gradient(#767ba0 0% 25%, #e7e2d5 0% 50%);
+  background-color: var(--sq-light);
+  background-image: repeating-conic-gradient(var(--sq-dark) 0% 25%, var(--sq-light) 0% 50%);
   background-size: 25% 25%;
   background-position: 0 0;
 }
@@ -65,7 +81,7 @@ cg-board square.oc.move-dest {
 .cg-wrap coords coord,
 .cg-wrap coords coord.white,
 .cg-wrap coords coord.black {
-  color: rgba(110, 107, 99, 0.95);
+  color: var(--coord-ink);
 }
 
 /* ---- check and checkmate ----

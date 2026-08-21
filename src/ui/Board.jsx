@@ -120,7 +120,7 @@ export default function Board({
         width: size,
         height: size,
         flex: "0 0 auto",
-        border: `2px solid #2E3260`,
+        border: `2px solid var(--board-edge)`,
         boxSizing: "content-box",
         /* Room for the coordinates, which sit outside the board. Generous
            enough that the letters clear the border rather than resting on it. */

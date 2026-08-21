@@ -1,5 +1,7 @@
 # Chess Lab
 
+**Build your chess genius.**
+
 An offline chess trainer. No network calls at runtime, no accounts, no API keys.
 Everything — engine, puzzles, lessons, and your progress — lives on the machine.
 

@@ -40,6 +40,9 @@ export default function App() {
   /* Set when Play hands a finished game over, so Review opens on that game
      instead of an empty paste box. */
   const [reviewGame, setReviewGame] = useState(null);
+  /* "slate" is the house palette, "wood" the classic tournament board. Applied
+     to the document element so the CSS variables cascade to every board. */
+  const [boardTheme, setBoardThemeState] = useState("slate");
 
   useEffect(() => {
     (async () => {
@@ -54,6 +57,13 @@ export default function App() {
         const t = await kvGet("theme");
         if (t) setThemeState(t === "all" ? null : t);
         setBookDue(b.puzzles ? (await profileStats().catch(() => ({}))).blunders_due || 0 : 0);
+        const bt = await kvGet("boardTheme");
+        if (bt === "wood" || bt === "slate") {
+          setBoardThemeState(bt);
+          document.documentElement.setAttribute("data-board", bt);
+        } else {
+          document.documentElement.setAttribute("data-board", "slate");
+        }
         const s = await kvGet("sound");
         const on = s !== "off";
         setSound(on);
@@ -78,6 +88,15 @@ export default function App() {
 
   const refreshBook = () => {
     profileStats().then((s) => setBookDue(s.blunders_due || 0)).catch(() => {});
+  };
+
+  const toggleBoard = () => {
+    setBoardThemeState((cur) => {
+      const next = cur === "slate" ? "wood" : "slate";
+      document.documentElement.setAttribute("data-board", next);
+      kvSet("boardTheme", next).catch(() => {});
+      return next;
+    });
   };
 
   const toggleSound = () => {
@@ -113,13 +132,36 @@ export default function App() {
               <div style={{ fontFamily: MONO, fontSize: 17, letterSpacing: "0.2em", textTransform: "uppercase", fontWeight: 600 }}>
                 Chess Lab
               </div>
-              <div style={label({ marginTop: 3 })}>
+              <div
+                style={{
+                  fontFamily: MONO, fontSize: 11, letterSpacing: "0.18em",
+                  textTransform: "uppercase", color: C.amber, marginTop: 4,
+                }}
+              >
+                Build your chess genius
+              </div>
+              <div style={label({ marginTop: 4 })}>
                 {info
                   ? `${info.puzzles.toLocaleString()} puzzles · stockfish 18 · ${info.threads} threads · ${info.hash_mb}mb hash`
                   : "starting engine…"}
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "flex-end", gap: 16 }}>
+              <button
+                onClick={toggleBoard}
+                title="Switch the board between slate and wood"
+                style={{
+                  ...label({ color: C.ink }),
+                  background: "transparent",
+                  border: `1px solid ${C.line}`,
+                  borderRadius: 2,
+                  padding: "7px 10px",
+                  cursor: "pointer",
+                  marginBottom: 4,
+                }}
+              >
+                {boardTheme === "wood" ? "◧ wood" : "◧ slate"}
+              </button>
               <button
                 onClick={toggleSound}
                 title={sound ? "Mute sound" : "Unmute sound"}
