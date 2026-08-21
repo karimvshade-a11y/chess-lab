@@ -16,6 +16,15 @@ import { dueBlunders, allBlunders, gradeBlunder, forgetBlunder } from "../stockf
 import { KINDS } from "./judge.js";
 import { playMove, play as sfx } from "../ui/sound.js";
 
+/* max-content keeps the board column at its real width; `auto` would let it
+   swallow the leftover space and strand the board on the left. */
+const LAYOUT = {
+  display: "grid",
+  gridTemplateColumns: "max-content var(--panel)",
+  gap: 24,
+  justifyContent: "center",
+  alignItems: "start",
+};
 export default function Blunders({ onGraded }) {
   const [queue, setQueue] = useState([]);
   const [item, setItem] = useState(null);
@@ -95,10 +104,15 @@ export default function Blunders({ onGraded }) {
   if (phase === "empty" || !item || !pos) {
     return (
       <div style={card()}>
-        <div style={label()}>the blunder book is empty</div>
-        <p style={{ fontFamily: MONO, fontSize: 12, color: C.mute, marginTop: 8, lineHeight: 1.7 }}>
-          Analyse one of your games under <strong style={{ color: C.ink }}>Review</strong> and file the
-          mistakes. They come back here on the same spaced schedule as the puzzles.
+        <div style={label()}>nothing to practise yet</div>
+        <p style={{ fontFamily: MONO, fontSize: 12.5, color: C.ink, marginTop: 8, lineHeight: 1.8 }}>
+          This fills up from your own games. Play one under{" "}
+          <strong>Play</strong>, then press <strong>Review this game</strong> — the engine walks
+          through it, and every mistake it finds lands here automatically.
+        </p>
+        <p style={{ fontFamily: MONO, fontSize: 12, color: C.mute, marginTop: 10, lineHeight: 1.7 }}>
+          Each one comes back as a puzzle: the same position, your move rejected, and the move you
+          missed. Get it right and it returns further away; get it wrong and it returns tomorrow.
         </p>
       </div>
     );
@@ -113,7 +127,7 @@ export default function Blunders({ onGraded }) {
   };
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "auto 300px", gap: 20, alignItems: "start" }}>
+    <div style={LAYOUT}>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <Captured pos={pos} player={mover === "white" ? "b" : "w"} />
         <Board

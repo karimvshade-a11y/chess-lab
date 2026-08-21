@@ -1,6 +1,11 @@
-/* Board size drives the whole layout; every panel measures against it. */
+/* Board size drives the whole layout; every panel measures against it.
+   The subtraction is the chrome the board has to share the window with:
+   header and tab bar (~150), a capture strip above and below (~60), page
+   padding (~60). Without it the board is taller than the space it has and
+   the lower capture strip is cut off by the window edge. */
 :root {
-  --board: min(76vh, 820px);
+  --board: min(calc(100vh - 280px), 820px);
+  --panel: 320px;
 }
 
 html, body, #root { height: 100%; margin: 0; }

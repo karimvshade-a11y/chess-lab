@@ -10,7 +10,8 @@ import Board from "../ui/Board.jsx";
 import { C, MONO, label, card } from "../ui/theme.js";
 import { parseFEN, makeMove, legalMoves, uciOf, toSAN, sqName, inCheck, isMate } from "../engine/core.js";
 import { pickPuzzles, dueReviews, recordAttempt } from "../stockfish/client.js";
-import ThemePicker, { prettyTheme } from "./ThemePicker.jsx";
+import ThemePicker from "./ThemePicker.jsx";
+import { THEMES, primaryTheme, prettyTheme } from "./themes.js";
 import Captured from "../ui/Captured.jsx";
 import { playMove, play as sfx } from "../ui/sound.js";
 
@@ -23,6 +24,15 @@ function nextRating(mine, puzzle, won) {
   return Math.round(mine + k * ((won ? 1 : 0) - expected));
 }
 
+/* max-content keeps the board column at its real width; `auto` would let it
+   swallow the leftover space and strand the board on the left. */
+const LAYOUT = {
+  display: "grid",
+  gridTemplateColumns: "max-content var(--panel)",
+  gap: 24,
+  justifyContent: "center",
+  alignItems: "start",
+};
 export default function Tactics({ rating, setRating, onSolved, theme, setTheme }) {
   const [queue, setQueue] = useState([]);
   const [puzzle, setPuzzle] = useState(null);
@@ -31,8 +41,10 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
   const [phase, setPhase] = useState("loading"); // loading | solving | wrong | solved | empty
   const [lastMove, setLastMove] = useState(null);
   const [played, setPlayed] = useState([]);
-  const [hinted, setHinted] = useState(false);
-  const [hintSquare, setHintSquare] = useState(null);
+  /* 0 none · 1 which piece · 2 what the idea is · 3 the move itself.
+     One button that dumps the answer teaches nothing; each rung here asks you
+     to do a bit more of the work before the next is offered. */
+  const [hintLevel, setHintLevel] = useState(0);
   const [orientation, setOrientation] = useState("white");
   const startedAt = useRef(Date.now());
   const timers = useRef([]);
@@ -71,8 +83,8 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
     setPhase("solving");
     setLastMove({ from: sqName(opening.from), to: sqName(opening.to) });
     setPlayed([]);
-    setHinted(false);
-    setHintSquare(null);
+    setHintLevel(0);
+    
     setOrientation(after.turn === "w" ? "white" : "black");
     startedAt.current = Date.now();
   }, []);
@@ -104,12 +116,12 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
     (won) => {
       setPhase(won ? "solved" : "wrong");
       const ms = Date.now() - startedAt.current;
-      const updated = nextRating(rating, puzzle.rating, won && !hinted);
+      const updated = nextRating(rating, puzzle.rating, won && !(hintLevel > 0));
       setRating(updated);
-      recordAttempt(puzzle.id, won, ms, hinted, updated).catch(() => {});
+      recordAttempt(puzzle.id, won, ms, (hintLevel > 0), updated).catch(() => {});
       if (won) onSolved && onSolved();
     },
-    [rating, puzzle, hinted, setRating, onSolved]
+    [rating, puzzle, hintLevel, setRating, onSolved]
   );
 
   const onMove = useCallback(
@@ -129,7 +141,7 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
       const san = toSAN(pos, mv);
       const after = makeMove(pos, mv);
       setLastMove({ from, to });
-      setHintSquare(null);
+      
 
       const correct = uciOf(mv) === want;
       // Mate ends the puzzle regardless of which mate you found.
@@ -175,10 +187,10 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
     [phase, puzzle, pos, step, finish]
   );
 
-  const showHint = () => {
+  /* Each press buys one more rung: which piece, then the idea, then the move. */
+  const nextHint = () => {
     if (phase !== "solving" || !puzzle) return;
-    setHinted(true);
-    setHintSquare(puzzle.moves[step].slice(0, 2));
+    setHintLevel((l) => Math.min(3, l + 1));
   };
 
   const retry = () => load(puzzle);
@@ -201,11 +213,19 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
   const toMoveLabel = pos.turn === "w" ? "White to play" : "Black to play";
 
   const mated = isMate(pos) ? pos.turn : null;
+  const themeKey = primaryTheme(puzzle.themes);
+  const lesson = themeKey ? THEMES[themeKey] : null;
+  const solutionSan = (() => {
+    const want = puzzle.moves[step];
+    if (!want) return null;
+    const mv = legalMoves(pos).find((m) => uciOf(m) === want);
+    return mv ? toSAN(pos, mv) : want;
+  })();
   const topPlayer = orientation === "white" ? "b" : "w";
   const bottomPlayer = orientation === "white" ? "w" : "b";
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "auto 300px", gap: 20, alignItems: "start" }}>
+    <div style={LAYOUT}>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <Captured pos={pos} player={topPlayer} />
         <Board
@@ -215,7 +235,11 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
           lastMove={lastMove}
           check={checking}
           interactive={phase === "solving"}
-          highlight={hintSquare ? [{ square: hintSquare, brush: "yellow" }] : []}
+          highlight={
+            hintLevel >= 1 && phase === "solving" && puzzle.moves[step]
+              ? [{ square: puzzle.moves[step].slice(0, 2), brush: "yellow" }]
+              : []
+          }
           mated={mated}
         />
         <Captured pos={pos} player={bottomPlayer} />
@@ -233,7 +257,7 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
             }}
           >
             {phase === "solving" && "Find the move"}
-            {phase === "solved" && (hinted ? "Solved with a hint" : "Solved")}
+            {phase === "solved" && ((hintLevel > 0) ? "Solved with a hint" : "Solved")}
             {phase === "wrong" && "Not the move"}
           </div>
 
@@ -272,10 +296,53 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
           </div>
         )}
 
+        {phase === "solving" && hintLevel >= 1 && (
+          <div style={card({ borderColor: C.amber })}>
+            <div style={label({ color: C.amber })}>hint {hintLevel} of 3</div>
+            {hintLevel >= 1 && (
+              <div style={{ fontFamily: MONO, fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>
+                Move the piece on <strong>{puzzle.moves[step].slice(0, 2)}</strong> — highlighted on
+                the board.
+              </div>
+            )}
+            {hintLevel >= 2 && lesson && (
+              <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
+                <div style={label()}>the idea: {lesson.name}</div>
+                <p style={{ fontFamily: MONO, fontSize: 12, lineHeight: 1.6, margin: "5px 0 0", color: C.ink }}>
+                  {lesson.what}
+                </p>
+              </div>
+            )}
+            {hintLevel >= 3 && (
+              <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
+                <div style={label({ color: C.red })}>the move</div>
+                <div style={{ fontFamily: MONO, fontSize: 16, fontWeight: 600, marginTop: 4 }}>
+                  {solutionSan || puzzle.moves[step]}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {phase !== "solving" && (
           <div style={card()}>
-            <div style={label()}>themes</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+            {lesson ? (
+              <>
+                <div style={label({ color: C.indigo })}>{lesson.name}</div>
+                <p style={{ fontFamily: MONO, fontSize: 12.5, lineHeight: 1.7, margin: "6px 0 0", color: C.ink }}>
+                  {lesson.what}
+                </p>
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.line}` }}>
+                  <div style={label()}>how to spot it next time</div>
+                  <p style={{ fontFamily: MONO, fontSize: 12.5, lineHeight: 1.7, margin: "5px 0 0", color: C.ink }}>
+                    {lesson.look}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div style={label()}>themes</div>
+            )}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
               {puzzle.themes.slice(0, 8).map((t) => (
                 <span
                   key={t}
@@ -289,9 +356,9 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
               ))}
             </div>
             {phase === "wrong" && (
-              <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 12, color: C.mute }}>
-                The move was <strong style={{ color: C.ink }}>{puzzle.moves[step]}</strong>. It comes
-                back for review tomorrow.
+              <div style={{ marginTop: 12, fontFamily: MONO, fontSize: 12.5, color: C.ink, lineHeight: 1.6 }}>
+                The move was <strong style={{ color: C.green }}>{solutionSan || puzzle.moves[step]}</strong>.
+                <span style={{ color: C.mute }}> This one comes back tomorrow.</span>
               </div>
             )}
           </div>
@@ -299,8 +366,8 @@ export default function Tactics({ rating, setRating, onSolved, theme, setTheme }
 
         <div style={{ display: "flex", gap: 8 }}>
           {phase === "solving" && (
-            <Btn onClick={showHint} disabled={hinted}>
-              {hinted ? "Hint shown" : "Hint"}
+            <Btn onClick={nextHint} disabled={hintLevel >= 3}>
+              {hintLevel === 0 ? "Hint" : hintLevel === 1 ? "Another hint" : hintLevel === 2 ? "Show the move" : "Shown"}
             </Btn>
           )}
           {phase === "wrong" && <Btn onClick={retry}>Retry</Btn>}

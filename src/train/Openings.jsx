@@ -20,6 +20,7 @@ function loadLessons(text) {
         name: t.headers.Event || "Untitled",
         family: t.headers.Family || "",
         side: t.headers.PlayAs || "White",
+        summary: t.headers.Summary || "",
         line: mainline(t),
         errors: t.errors,
       };
@@ -27,6 +28,15 @@ function loadLessons(text) {
     .filter((l) => l.line.length && !l.errors.length);
 }
 
+/* max-content keeps the board column at its real width; `auto` would let it
+   swallow the leftover space and strand the board on the left. */
+const LAYOUT = {
+  display: "grid",
+  gridTemplateColumns: "max-content var(--panel)",
+  gap: 24,
+  justifyContent: "center",
+  alignItems: "start",
+};
 export default function Openings() {
   const lessons = useMemo(() => loadLessons(lessonsText), []);
   const [idx, setIdx] = useState(0);
@@ -36,6 +46,9 @@ export default function Openings() {
   const [wrong, setWrong] = useState(null);
   const [done, setDone] = useState(false);
   const [reveal, setReveal] = useState(false);
+  /* The note belonging to the move just played, so every move gets explained
+     as it happens rather than one summary at the start of the lesson. */
+  const [lastNote, setLastNote] = useState(null);
   const timers = useRef([]);
 
   const lesson = lessons[idx];
@@ -52,6 +65,7 @@ export default function Openings() {
     setWrong(null);
     setDone(false);
     setReveal(false);
+    setLastNote(null);
   };
 
   // When the line opens with the other side, play their move first.
@@ -68,6 +82,7 @@ export default function Openings() {
       setPos(after);
       setLastMove({ from: sqName(mv.from), to: sqName(mv.to) });
       setStep((s) => s + 1);
+      setLastNote({ san: node.san, text: node.comment, mine: false });
       playMove(pos, after, mv, { isMate: isMate(after), inCheck: inCheck(after, after.turn) });
     }, 420);
     timers.current.push(t);
@@ -93,6 +108,8 @@ export default function Openings() {
     setPos(after);
     setLastMove({ from, to });
     setStep((s) => s + 1);
+    setLastNote({ san: node.san, text: node.comment, mine: true });
+    setReveal(false);
     playMove(pos, after, mv, { isMate: isMate(after), inCheck: inCheck(after, after.turn) });
   };
 
@@ -101,11 +118,10 @@ export default function Openings() {
   }
 
   const node = lesson.line[step];
-  const comment = lesson.line.find((n) => n.comment)?.comment;
   const progress = Math.round((step / lesson.line.length) * 100);
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "auto 300px", gap: 20, alignItems: "start" }}>
+    <div style={LAYOUT}>
       <Board
         pos={pos}
         orientation={mySide === "w" ? "white" : "black"}
@@ -127,12 +143,35 @@ export default function Openings() {
           </div>
         </div>
 
-        {comment && (
+        {lesson.summary && step === 0 && (
           <div style={card()}>
-            <div style={label()}>idea</div>
-            <p style={{ fontFamily: MONO, fontSize: 12, lineHeight: 1.6, color: C.ink, margin: "6px 0 0" }}>
-              {comment}
+            <div style={label()}>what this opening is about</div>
+            <p style={{ fontFamily: MONO, fontSize: 12.5, lineHeight: 1.7, color: C.ink, margin: "6px 0 0" }}>
+              {lesson.summary}
             </p>
+          </div>
+        )}
+
+        {lastNote && lastNote.text && (
+          <div style={card({ borderColor: lastNote.mine ? C.green : C.line })}>
+            <div style={label({ color: lastNote.mine ? C.green : C.mute })}>
+              {lastNote.mine ? `you played ${lastNote.san}` : `opponent played ${lastNote.san}`}
+            </div>
+            <p style={{ fontFamily: MONO, fontSize: 12.5, lineHeight: 1.7, color: C.ink, margin: "6px 0 0" }}>
+              {lastNote.text}
+            </p>
+          </div>
+        )}
+
+        {reveal && node && !done && (
+          <div style={card({ borderColor: C.amber })}>
+            <div style={label({ color: C.amber })}>what to play, and why</div>
+            <div style={{ fontFamily: MONO, fontSize: 16, fontWeight: 600, marginTop: 5 }}>{node.san}</div>
+            {node.comment && (
+              <p style={{ fontFamily: MONO, fontSize: 12.5, lineHeight: 1.7, color: C.ink, margin: "6px 0 0" }}>
+                {node.comment}
+              </p>
+            )}
           </div>
         )}
 
@@ -147,15 +186,11 @@ export default function Openings() {
               ? "Your move"
               : "…"}
           </div>
-          {reveal && node && !done && (
-            <div style={{ fontFamily: MONO, fontSize: 13, marginTop: 6, color: C.amber }}>
-              Play {node.san}
-            </div>
-          )}
+
         </div>
 
         <div style={{ display: "flex", gap: 6 }}>
-          <Small onClick={() => setReveal((r) => !r)}>{reveal ? "hide" : "show move"}</Small>
+          <Small onClick={() => setReveal((r) => !r)}>{reveal ? "hide" : "explain this move"}</Small>
           <Small onClick={() => restart()}>restart</Small>
         </div>
 

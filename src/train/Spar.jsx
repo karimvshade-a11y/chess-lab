@@ -12,7 +12,8 @@ import {
   parseFEN, makeMove, legalMoves, uciOf, toSAN, sqName, toFEN,
   inCheck, isMate, isStalemate, insufficientMaterial, START_FEN,
 } from "../engine/core.js";
-import { play, onDone, stop } from "../stockfish/client.js";
+import { play, onDone, stop, saveGame } from "../stockfish/client.js";
+import { writePGN, todayPgnDate } from "../engine/pgn.js";
 import Captured from "../ui/Captured.jsx";
 import { playMove, play as sfx } from "../ui/sound.js";
 
@@ -25,7 +26,16 @@ const LEVELS = [
   { name: "Full strength", elo: 3190, ms: 1500 },
 ];
 
-export default function Spar() {
+/* max-content keeps the board column at its real width; `auto` would let it
+   swallow the leftover space and strand the board on the left. */
+const LAYOUT = {
+  display: "grid",
+  gridTemplateColumns: "max-content var(--panel)",
+  gap: 24,
+  justifyContent: "center",
+  alignItems: "start",
+};
+export default function Spar({ onReview }) {
   const [level, setLevel] = useState(1);
   const [side, setSide] = useState("white");
   const [pos, setPos] = useState(() => parseFEN(START_FEN));
@@ -51,10 +61,63 @@ export default function Spar() {
   /* Checkmate gets its sound from the move that delivered it. The quiet endings
      - stalemate, insufficient material, fifty moves - have no such moment, so
      announce them once when the game state settles. */
+  const [saved, setSaved] = useState(null);
   const announced = useRef(null);
+  const stored = useRef(false);
+
+  const buildPgn = (finalResult) => {
+    const me = side === "white" ? "You" : `Stockfish ${LEVELS[level].elo}`;
+    const them = side === "white" ? `Stockfish ${LEVELS[level].elo}` : "You";
+    return writePGN(
+      {
+        Event: "Chess Lab sparring",
+        Date: todayPgnDate(),
+        White: me,
+        Black: them,
+        Result: finalResult,
+        Opponent: `Stockfish 18 at ${LEVELS[level].elo} Elo`,
+      },
+      moves.map((m) => m.san)
+    );
+  };
+
+  const resultTag = () => {
+    if (!over) return "*";
+    if (/checkmate/.test(over)) return pos.turn === "w" ? "0-1" : "1-0";
+    return "1/2-1/2";
+  };
+
+  /* Persist the finished game so Review can pick it up without the player
+     copying a PGN anywhere. Guarded so a re-render cannot store it twice. */
+  const persist = async () => {
+    if (stored.current || moves.length < 2) return null;
+    stored.current = true;
+    const tag = resultTag();
+    try {
+      const id = await saveGame(
+        buildPgn(tag),
+        side === "white" ? "You" : `Stockfish ${LEVELS[level].elo}`,
+        side === "white" ? `Stockfish ${LEVELS[level].elo}` : "You",
+        tag,
+        mySide,
+        moves.length
+      );
+      setSaved(id);
+      return id;
+    } catch {
+      stored.current = false;
+      return null;
+    }
+  };
   useEffect(() => {
-    if (over && over !== announced.current && !/checkmate/.test(over)) sfx("draw");
+    if (over && over !== announced.current) {
+      if (!/checkmate/.test(over)) sfx("draw");
+      persist();
+    }
     announced.current = over;
+    // persist reads current state each time it runs; re-binding it here would
+    // only restart the effect on every move.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [over]);
 
   // Engine replies whenever it is not our turn.
@@ -99,6 +162,8 @@ export default function Spar() {
 
   const reset = (asSide = side) => {
     stop();
+    stored.current = false;
+    setSaved(null);
     setSide(asSide);
     setPos(parseFEN(START_FEN));
     setMoves([]);
@@ -113,7 +178,7 @@ export default function Spar() {
   const bottomPlayer = side === "white" ? "w" : "b";
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "auto 300px", gap: 20, alignItems: "start" }}>
+    <div style={LAYOUT}>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <Captured pos={pos} player={topPlayer} />
         <Board
@@ -175,6 +240,26 @@ export default function Spar() {
           </div>
         </div>
 
+        {moves.length >= 2 && (
+          <div style={card({ borderColor: over ? C.indigo : C.line })}>
+            <div style={label()}>{over ? "game over" : "in progress"}</div>
+            <p style={{ fontFamily: MONO, fontSize: 12, color: C.mute, margin: "6px 0 10px", lineHeight: 1.6 }}>
+              {over
+                ? "Have the engine walk through it and show you every mistake."
+                : "You can review what you have played so far at any time."}
+            </p>
+            <Small
+              onClick={async () => {
+                const id = (await persist()) ?? saved;
+                if (id != null && onReview) onReview(id);
+              }}
+              primary
+            >
+              Review this game
+            </Small>
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: 6 }}>
           <Small onClick={() => reset("white")}>new as white</Small>
           <Small onClick={() => reset("black")}>new as black</Small>
@@ -184,14 +269,17 @@ export default function Spar() {
   );
 }
 
-function Small({ children, onClick }) {
+function Small({ children, onClick, primary }) {
   return (
     <button
       onClick={onClick}
       style={{
-        ...label({ color: C.ink }), background: "transparent",
-        border: `1px solid ${C.line}`, padding: "8px 10px",
+        ...label({ color: primary ? "#F7F5EF" : C.ink }),
+        background: primary ? C.indigo : "transparent",
+        border: `1px solid ${primary ? C.indigo : C.line}`,
+        padding: primary ? "10px 12px" : "8px 10px",
         borderRadius: 2, cursor: "pointer", flex: 1,
+        width: primary ? "100%" : undefined,
       }}
     >
       {children}

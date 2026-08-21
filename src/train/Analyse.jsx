@@ -11,6 +11,34 @@ import {
   inCheck, isMate, isStalemate, insufficientMaterial, START_FEN,
 } from "../engine/core.js";
 import { analyse, stop, onProgress, formatScore, scoreToBar } from "../stockfish/client.js";
+
+/* The evaluation in words. A number like "+1.4" means nothing until you know
+   it is measured in pawns and which way it points. */
+function verdict(line, whiteToMove) {
+  if (!line) return { text: "thinking…", tone: null };
+  const flip = whiteToMove ? 1 : -1;
+  if (line.mate != null) {
+    const m = line.mate * flip;
+    const who = m > 0 ? "White" : "Black";
+    return { text: `${who} mates in ${Math.abs(m)}`, tone: "decisive" };
+  }
+  const cp = (line.cp ?? 0) * flip;
+  const a = Math.abs(cp);
+  const who = cp > 0 ? "White" : "Black";
+  if (a < 30) return { text: "Dead level", tone: "level" };
+  if (a < 90) return { text: `${who} is slightly better`, tone: "slight" };
+  if (a < 250) return { text: `${who} is clearly better`, tone: "clear" };
+  if (a < 600) return { text: `${who} is winning`, tone: "decisive" };
+  return { text: `${who} is completely winning`, tone: "decisive" };
+}
+
+const PAWNS = (line, whiteToMove) => {
+  if (!line || line.mate != null) return null;
+  const cp = (line.cp ?? 0) * (whiteToMove ? 1 : -1);
+  const p = Math.abs(cp) / 100;
+  if (p < 0.3) return null;
+  return `about ${p.toFixed(1)} ${p < 1.5 ? "pawn" : "pawns"} worth of advantage`;
+};
 import Captured from "../ui/Captured.jsx";
 import { playMove } from "../ui/sound.js";
 
@@ -110,7 +138,7 @@ export default function Analyse() {
   const bottomPlayer = orientation === "white" ? "w" : "b";
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "26px auto 1fr", gap: 14, alignItems: "start" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "26px max-content var(--panel)", gap: 16, justifyContent: "center", alignItems: "start" }}>
       {/* evaluation bar */}
       <div style={{ height: "var(--board)", width: 26, border: `1px solid ${C.line}`, background: C.ink, position: "relative" }}>
         <div
@@ -143,24 +171,54 @@ export default function Analyse() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 300 }}>
+        <div style={card({ background: C.paper })}>
+          <div style={label()}>what this tab is for</div>
+          <p style={{ fontFamily: MONO, fontSize: 12, lineHeight: 1.7, margin: "6px 0 0", color: C.ink }}>
+            Set up any position — drag pieces on the board or paste a FEN — and the engine tells you
+            who stands better and what it would play. The <strong>green arrow</strong> is its first
+            choice. Play moves on the board to explore, and use ◀ ▶ to step back and forth.
+          </p>
+        </div>
+
         <div style={card()}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-            <div style={label()}>evaluation</div>
+            <div style={label()}>who is better</div>
             <div style={label()}>{top ? `depth ${top.depth}/${top.seldepth}` : running ? "thinking" : "paused"}</div>
           </div>
-          <div style={{ fontFamily: MONO, fontSize: 32, fontWeight: 600, color: C.indigo, fontVariantNumeric: "tabular-nums" }}>
-            {over ? "--" : formatScore(top, whiteToMove)}
+          <div style={{ fontFamily: MONO, fontSize: 20, fontWeight: 600, marginTop: 4, color: over ? C.red : C.ink }}>
+            {over || verdict(top, whiteToMove).text}
           </div>
-          {top && (
-            <div style={label({ marginTop: 2 })}>
-              {(top.nodes / 1e6).toFixed(1)}M nodes · {(top.nps / 1000).toFixed(0)}k nps
+          {!over && PAWNS(top, whiteToMove) && (
+            <div style={label({ marginTop: 3 })}>{PAWNS(top, whiteToMove)}</div>
+          )}
+          {!over && (
+            <div style={{ display: "flex", gap: 16, marginTop: 10, alignItems: "baseline" }}>
+              <div>
+                <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 600, color: C.indigo, fontVariantNumeric: "tabular-nums" }}>
+                  {formatScore(top, whiteToMove)}
+                </div>
+                <div style={label()}>score in pawns</div>
+              </div>
+              {top && (
+                <div>
+                  <div style={{ fontFamily: MONO, fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+                    {top.depth}
+                  </div>
+                  <div style={label()}>moves ahead</div>
+                </div>
+              )}
             </div>
           )}
           {over && <div style={{ fontFamily: MONO, fontSize: 13, color: C.red, marginTop: 6 }}>{over}</div>}
         </div>
 
         <div style={card({ padding: 0, overflow: "hidden" })}>
-          <div style={{ ...label(), padding: "10px 14px 6px" }}>best lines</div>
+          <div style={{ padding: "10px 14px 6px" }}>
+            <div style={label()}>what the engine would play</div>
+            <div style={label({ fontSize: 9, marginTop: 3, textTransform: "none", letterSpacing: 0 })}>
+              best first · the number is who stands better afterwards
+            </div>
+          </div>
           {lines.length === 0 && (
             <div style={{ padding: "0 14px 12px", fontFamily: MONO, fontSize: 12, color: C.mute }}>
               {over ? "Game over." : "…"}
@@ -204,7 +262,7 @@ export default function Analyse() {
         </div>
 
         <div style={card()}>
-          <div style={label()}>multi-pv</div>
+          <div style={label()}>how many options to show</div>
           <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
             {[1, 3, 5].map((n) => (
               <Small key={n} onClick={() => setMultipv(n)} active={multipv === n}>

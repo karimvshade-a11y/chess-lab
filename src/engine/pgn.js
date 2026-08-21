@@ -77,3 +77,50 @@ export function mainline(tree) {
   while (n.children.length) { n = n.children[0]; out.push(n); }
   return out;
 }
+
+/**
+ * Write a PGN. Takes SAN moves, because that is what the scoresheet already
+ * holds and re-deriving them from a position would only invite disagreement
+ * between what was shown and what was saved.
+ */
+export function writePGN(headers, sanMoves, startFen = null) {
+  const h = { Event: "?", Site: "Chess Lab", Date: "????.??.??", White: "?", Black: "?", Result: "*", ...headers };
+  const order = ["Event", "Site", "Date", "Round", "White", "Black", "Result"];
+  const lines = [];
+  for (const k of order) if (h[k] != null) lines.push(`[${k} "${String(h[k]).replace(/"/g, "'")}"]`);
+  for (const k of Object.keys(h)) if (!order.includes(k)) lines.push(`[${k} "${String(h[k]).replace(/"/g, "'")}"]`);
+  if (startFen && startFen !== START_FEN) {
+    lines.push(`[SetUp "1"]`);
+    lines.push(`[FEN "${startFen}"]`);
+  }
+  lines.push("");
+
+  const body = [];
+  let n = 1;
+  const startsBlack = startFen ? startFen.split(" ")[1] === "b" : false;
+  sanMoves.forEach((san, i) => {
+    const whiteToMove = startsBlack ? i % 2 === 1 : i % 2 === 0;
+    if (whiteToMove) body.push(`${n}.`);
+    else if (i === 0) body.push(`${n}...`);
+    body.push(san);
+    if (!whiteToMove) n++;
+  });
+  body.push(h.Result);
+
+  // Wrap at a conventional width so the text stays readable when exported.
+  const wrapped = [];
+  let line = "";
+  for (const tok of body) {
+    if (line.length + tok.length + 1 > 78) { wrapped.push(line); line = ""; }
+    line += (line ? " " : "") + tok;
+  }
+  if (line) wrapped.push(line);
+
+  return lines.join("\n") + "\n" + wrapped.join("\n") + "\n";
+}
+
+export const todayPgnDate = () => {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`;
+};

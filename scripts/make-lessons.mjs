@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { parseFEN, makeMove, legalMoves, uciOf, toSAN, START_FEN } from "../src/engine/core.js";
+import { NOTES } from "./opening-notes.js";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(HERE, "..");
@@ -28,8 +29,11 @@ for (const o of DATA.openings) {
     const san = toSAN(pos, mv);
     if (pos.turn === "w") parts.push(`${pos.full}.`);
     parts.push(san);
-    // Attach the teaching note to the first move so it shows before you play.
-    if (i === 0) parts.push(`{${o.note}}`);
+    /* A note per move, so the drill can explain what this move is for rather
+       than showing one summary at the start and going quiet. */
+    const note = (NOTES[o.name] || [])[i];
+    if (note) parts.push(`{${note.replace(/[{}]/g, "")}}`);
+    else if (i === 0) parts.push(`{${o.note}}`);
     pos = makeMove(pos, mv);
   }
 
@@ -40,6 +44,7 @@ for (const o of DATA.openings) {
       `[Family "${o.family}"]`,
       `[PlayAs "${o.side}"]`,
       `[Result "*"]`,
+      `[Summary "${o.note.replace(/"/g, "'")}"]`,
       "",
       parts.join(" ") + " *",
       "",
@@ -49,4 +54,9 @@ for (const o of DATA.openings) {
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, games.join("\n"));
-console.log(`Wrote ${path.relative(ROOT, OUT)}: ${games.length} lessons, ${errors} errors`);
+const noted = DATA.openings.reduce((n, o) => n + ((NOTES[o.name] || []).length), 0);
+console.log(`Wrote ${path.relative(ROOT, OUT)}: ${games.length} lessons, ${noted} move notes, ${errors} errors`);
+for (const o of DATA.openings) {
+  const have = (NOTES[o.name] || []).length;
+  if (have < o.uci.length) console.log(`  ${o.name}: ${have}/${o.uci.length} moves annotated`);
+}

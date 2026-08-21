@@ -31,6 +31,13 @@ export default function App() {
   const [sound, setSound] = useState(true);
   const [theme, setThemeState] = useState(null);
   const [bookDue, setBookDue] = useState(0);
+  /* Tabs must not mount before boot(): the puzzle database is opened there, and
+     a tab that queries it first gets an empty result it never retries. That was
+     the "Tactics is blank until I switch tabs and come back" bug. */
+  const [ready, setReady] = useState(false);
+  /* Set when Play hands a finished game over, so Review opens on that game
+     instead of an empty paste box. */
+  const [reviewGame, setReviewGame] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -49,8 +56,10 @@ export default function App() {
         const on = s !== "off";
         setSound(on);
         setMuted(!on);
+        setReady(true);
       } catch (e) {
         setError(String(e));
+        setReady(true);   // show the tab so it can explain what went wrong
       }
     })();
   }, []);
@@ -168,15 +177,33 @@ export default function App() {
           </div>
         )}
 
-        {tab === "tactics" && (
+        {!ready && (
+          <div style={card({ textAlign: "center", padding: "60px 20px" })}>
+            <div style={{ fontFamily: MONO, fontSize: 16, color: C.indigo }}>Starting the engine…</div>
+            <div style={label({ marginTop: 8 })}>loading stockfish and 20,000 puzzles</div>
+          </div>
+        )}
+
+        {ready && tab === "tactics" && (
           <Tactics rating={rating} setRating={setRating} onSolved={onSolved} theme={theme} setTheme={setTheme} />
         )}
-        {tab === "blunders" && <Blunders onGraded={refreshBook} />}
-        {tab === "openings" && <Openings />}
-        {tab === "spar" && <Spar />}
-        {tab === "review" && <Review onFiled={refreshBook} />}
-        {tab === "analyse" && <Analyse />}
-        {tab === "progress" && <Progress rating={rating} />}
+        {ready && tab === "blunders" && <Blunders onGraded={refreshBook} />}
+        {ready && tab === "openings" && <Openings />}
+        {ready && tab === "spar" && (
+          <Spar
+            onReview={(id) => { setReviewGame(id); setTab("review"); }}
+          />
+        )}
+        {ready && tab === "review" && (
+          <Review
+            openGameId={reviewGame}
+            onOpened={() => setReviewGame(null)}
+            onFiled={refreshBook}
+            onPractise={() => setTab("blunders")}
+          />
+        )}
+        {ready && tab === "analyse" && <Analyse />}
+        {ready && tab === "progress" && <Progress rating={rating} />}
       </div>
     </div>
   );

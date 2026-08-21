@@ -123,7 +123,22 @@ assert from unit tests, and this caught two bugs that unit tests could not:
   the king itself. Passing a square key matches no piece colour, so the
   highlight silently never renders.
 
-The harness is not part of the production build; Vite only bundles
+### Mocked backend
+
+```bash
+npm run mock
+```
+
+Opens `/mock.html`: the whole application in a browser, with the Tauri bridge
+replaced by canned responses. Worth knowing why it exists — a plain `npm run
+dev` in a browser has no bridge at all, so every screen falls back to its empty
+state and the real render paths are never reached. A crash that only happens
+once there is data in front of it will not reproduce there, but it will here.
+
+That is exactly how the "blank window" bug was found: the app rendered fine
+against no data and died the moment a puzzle arrived.
+
+Neither harness is part of the production build; Vite only bundles
 `index.html`.
 
 ## Tuning

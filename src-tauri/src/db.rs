@@ -78,6 +78,21 @@ impl Db {
                  );
                  CREATE INDEX IF NOT EXISTS blunder_due ON blunder(due);
 
+                 /* Games played in the app, kept so Review can pick them up
+                    without the player having to copy a PGN anywhere. */
+                 CREATE TABLE IF NOT EXISTS game (
+                   id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                   pgn      TEXT NOT NULL,
+                   white    TEXT NOT NULL DEFAULT '',
+                   black    TEXT NOT NULL DEFAULT '',
+                   result   TEXT NOT NULL DEFAULT '*',
+                   my_side  TEXT NOT NULL DEFAULT 'w',
+                   moves    INTEGER NOT NULL DEFAULT 0,
+                   at       INTEGER NOT NULL,
+                   reviewed INTEGER NOT NULL DEFAULT 0
+                 );
+                 CREATE INDEX IF NOT EXISTS game_at ON game(at);
+
                  CREATE TABLE IF NOT EXISTS kv (
                    k TEXT PRIMARY KEY,
                    v TEXT NOT NULL
@@ -339,6 +354,79 @@ impl Db {
             tally.into_iter().map(|(t, (tries, ok))| (t, tries, ok)).collect();
         out.sort_by(|a, b| b.1.cmp(&a.1));
         Ok(out)
+    }
+}
+
+#[derive(Serialize, Clone, Debug)]
+pub struct Game {
+    pub id: i64,
+    pub pgn: String,
+    pub white: String,
+    pub black: String,
+    pub result: String,
+    pub my_side: String,
+    pub moves: i64,
+    pub at: i64,
+    pub reviewed: i64,
+}
+
+impl Db {
+    pub fn save_game(
+        &self,
+        pgn: &str,
+        white: &str,
+        black: &str,
+        result: &str,
+        my_side: &str,
+        moves: i64,
+    ) -> Result<i64, String> {
+        let p = self.profile.as_ref().ok_or("profile db not open")?;
+        p.execute(
+            "INSERT INTO game (pgn, white, black, result, my_side, moves, at)
+             VALUES (?1,?2,?3,?4,?5,?6,?7)",
+            rusqlite::params![pgn, white, black, result, my_side, moves, now_ms()],
+        )
+        .map_err(|e| e.to_string())?;
+        Ok(p.last_insert_rowid())
+    }
+
+    pub fn list_games(&self, limit: usize) -> Result<Vec<Game>, String> {
+        let p = self.profile.as_ref().ok_or("profile db not open")?;
+        let mut st = p
+            .prepare(
+                "SELECT id, pgn, white, black, result, my_side, moves, at, reviewed
+                 FROM game ORDER BY at DESC LIMIT ?1",
+            )
+            .map_err(|e| e.to_string())?;
+        let rows = st
+            .query_map(rusqlite::params![limit as i64], |r| {
+                Ok(Game {
+                    id: r.get(0)?,
+                    pgn: r.get(1)?,
+                    white: r.get(2)?,
+                    black: r.get(3)?,
+                    result: r.get(4)?,
+                    my_side: r.get(5)?,
+                    moves: r.get(6)?,
+                    at: r.get(7)?,
+                    reviewed: r.get(8)?,
+                })
+            })
+            .map_err(|e| e.to_string())?;
+        Ok(rows.filter_map(Result::ok).collect())
+    }
+
+    pub fn mark_reviewed(&self, id: i64) -> Result<(), String> {
+        let p = self.profile.as_ref().ok_or("profile db not open")?;
+        p.execute("UPDATE game SET reviewed = 1 WHERE id = ?1", [id])
+            .map_err(|e| e.to_string())?;
+        Ok(())
+    }
+
+    pub fn delete_game(&self, id: i64) -> Result<(), String> {
+        let p = self.profile.as_ref().ok_or("profile db not open")?;
+        p.execute("DELETE FROM game WHERE id = ?1", [id]).map_err(|e| e.to_string())?;
+        Ok(())
     }
 }
 

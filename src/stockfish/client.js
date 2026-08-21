@@ -119,6 +119,14 @@ export const recordAttempt = (puzzleId, solved, ms, hinted, rating) =>
 export const profileStats = () => invoke("profile_stats");
 export const themeAccuracy = () => invoke("theme_accuracy");
 
+/* ---- games you have played ---- */
+
+export const saveGame = (pgn, white, black, result, mySide, moves) =>
+  invoke("save_game", { pgn, white, black, result, mySide, moves });
+export const listGames = (limit = 40) => invoke("list_games", { limit });
+export const markReviewed = (id) => invoke("mark_reviewed", { id });
+export const deleteGame = (id) => invoke("delete_game", { id });
+
 /* ---- blunder book ---- */
 
 export const saveBlunders = (items) => invoke("save_blunders", { items });

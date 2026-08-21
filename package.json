@@ -13,7 +13,8 @@
     "puzzles": "node scripts/build-puzzles.mjs",
     "lessons": "node scripts/make-lessons.mjs",
     "test": "node test/perft.test.mjs && node test/parsers.test.mjs && node test/material.test.mjs && node test/judge.test.mjs && node test/review.test.mjs && node test/puzzles.test.mjs",
-    "visual": "vite --port 5199 --strictPort --open /visual.html"
+    "visual": "vite --port 5199 --strictPort --open /visual.html",
+    "mock": "vite --port 5199 --strictPort --open /mock.html"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

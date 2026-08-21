@@ -1,7 +1,7 @@
 mod db;
 mod engine;
 
-use db::{Blunder, Db, Puzzle, SharedDb};
+use db::{Blunder, Db, Game, Puzzle, SharedDb};
 use engine::{Engine, Shared};
 use serde::Serialize;
 use tauri::{AppHandle, Manager, State};
@@ -228,6 +228,33 @@ async fn theme_accuracy(database: State<'_, SharedDb>) -> Result<Vec<(String, i6
     database.lock().map_err(|e| e.to_string())?.theme_accuracy()
 }
 
+/* ---- games played in the app ---- */
+
+#[tauri::command]
+async fn save_game(
+    database: State<'_, SharedDb>,
+    pgn: String, white: String, black: String,
+    result: String, my_side: String, moves: i64,
+) -> Result<i64, String> {
+    database.lock().map_err(|e| e.to_string())?
+        .save_game(&pgn, &white, &black, &result, &my_side, moves)
+}
+
+#[tauri::command]
+async fn list_games(database: State<'_, SharedDb>, limit: usize) -> Result<Vec<Game>, String> {
+    database.lock().map_err(|e| e.to_string())?.list_games(limit)
+}
+
+#[tauri::command]
+async fn mark_reviewed(database: State<'_, SharedDb>, id: i64) -> Result<(), String> {
+    database.lock().map_err(|e| e.to_string())?.mark_reviewed(id)
+}
+
+#[tauri::command]
+async fn delete_game(database: State<'_, SharedDb>, id: i64) -> Result<(), String> {
+    database.lock().map_err(|e| e.to_string())?.delete_game(id)
+}
+
 #[derive(Serialize)]
 pub struct Stats {
     pub attempts: i64,
@@ -236,6 +263,8 @@ pub struct Stats {
     pub distinct: i64,
     pub blunders: i64,
     pub blunders_due: i64,
+    pub games: i64,
+    pub games_unreviewed: i64,
 }
 
 #[tauri::command]
@@ -259,6 +288,8 @@ async fn profile_stats(database: State<'_, SharedDb>) -> Result<Stats, String> {
         distinct: g("SELECT COUNT(DISTINCT puzzle_id) FROM attempt", None),
         blunders: g("SELECT COUNT(*) FROM blunder", None),
         blunders_due: g("SELECT COUNT(*) FROM blunder WHERE due <= ?1", Some(now)),
+        games: g("SELECT COUNT(*) FROM game", None),
+        games_unreviewed: g("SELECT COUNT(*) FROM game WHERE reviewed = 0", None),
     })
 }
 
@@ -286,7 +317,11 @@ pub fn run() {
             all_blunders,
             grade_blunder,
             forget_blunder,
-            theme_accuracy
+            theme_accuracy,
+            save_game,
+            list_games,
+            mark_reviewed,
+            delete_game
         ])
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::Destroyed = event {

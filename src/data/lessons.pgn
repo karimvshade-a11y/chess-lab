@@ -3,109 +3,123 @@
 [Family "e4 e5"]
 [PlayAs "White"]
 [Result "*"]
+[Summary "The friendliest way to play 1.e4. Bishop eyes f7, c3 and d3 build a slow, solid centre you can push with d4 later."]
 
-1. e4 {The friendliest way to play 1.e4. Bishop eyes f7, c3 and d3 build a slow, solid centre you can push with d4 later.} e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d3 d6 6. O-O O-O *
+1. e4 {Takes the centre and opens lines for both the bishop and the queen.} e5 {Stakes an equal claim. Black must fight for the centre immediately or be squeezed.} 2. Nf3 {Develops with a threat: the knight attacks e5, so Black must answer.} Nc6 {The natural defender. It guards e5 and develops toward the centre.} 3. Bc4 {The Italian bishop. It stares at f7, the square only the king defends.} Bc5 {The mirror. Black eyes f2 with the same idea.} 4. c3 {Quiet but important: it prepares d4 and gives the bishop a retreat square on c2.} Nf6 {Develops and hits e4. Every developing move should carry a threat if it can.} 5. d3 {Solid rather than sharp. It supports e4 and opens the c1 bishop.} d6 {Black copies: the pawn shields e5 and frees the light-squared bishop.} 6. O-O {King to safety, rook toward the centre. Castle before you open the position.} O-O {Black completes the same job. The opening is over; now find a plan.} *
 
 [Event "Ruy Lopez, Morphy Defence"]
 [Site "Chess Lab"]
 [Family "e4 e5"]
 [PlayAs "White"]
 [Result "*"]
+[Summary "The most respected 1.e4 opening. Bb5 pressures the knight that defends e5; the a6/b5 chase gains time but loosens the queenside."]
 
-1. e4 {The most respected 1.e4 opening. Bb5 pressures the knight that defends e5; the a6/b5 chase gains time but loosens the queenside.} e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O *
+1. e4 {The king's pawn opening, the most direct fight for the centre.} e5 {Black meets it head on.} 2. Nf3 {Attacks e5 and develops. Knights before bishops, as a rule.} Nc6 {Defends the pawn and develops.} 3. Bb5 {The Ruy Lopez. The bishop pressures the knight that is holding e5 up.} a6 {The Morphy Defence. It asks the bishop a question before anything else is fixed.} 4. Ba4 {Retreating keeps the bishop on the a2-g8 diagonal, still aiming at the king.} Nf6 {Develops and attacks e4. Black is not yet worried about the pin.} 5. O-O {Castling here is safe because e4 is only loose, not lost.} Be7 {A modest square, but it unpins and prepares castling.} 6. Re1 {Backs up e4 so the knight on c6 can be dealt with later.} b5 {Gains space and finally shuts the bishop out of the a4-e8 diagonal.} 7. Bb3 {The bishop keeps the good diagonal rather than trading itself off.} d6 {Solid. It supports e5 and opens the dark-squared bishop.} 8. c3 {The key Ruy move: it builds d4 and gives the bishop c2 to run to.} O-O {Black is safe and fully developed. Both sides now manoeuvre.} *
 
 [Event "Scotch Game"]
 [Site "Chess Lab"]
 [Family "e4 e5"]
 [PlayAs "White"]
 [Result "*"]
+[Summary "Rips the centre open immediately. Great if you hate memorising 20 moves of Ruy Lopez theory."]
 
-1. e4 {Rips the centre open immediately. Great if you hate memorising 20 moves of Ruy Lopez theory.} e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 *
+1. e4 {The most forcing first move at club level.} e5 {Symmetry, and a fight for d4 and f4.} 2. Nf3 {Attacks e5 immediately.} Nc6 {The most natural defence.} 3. d4 {The Scotch. White opens the centre at once rather than building slowly.} exd4 {Black must take, or White simply wins the centre outright.} 4. Nxd4 {Recaptures with a piece and puts the knight on a strong central square.} Bc5 {Hits the knight and develops. Black plays actively rather than passively.} 5. Be3 {Defends the knight and prepares to meet the pressure on the diagonal.} Qf6 {Attacks the knight a second time and eyes f2.} 6. c3 {Supports the knight and takes b4 and d4 away from Black's pieces.} Nge7 {Develops behind the queen, keeping the bishop's diagonal free.} *
 
 [Event "Sicilian Najdorf"]
 [Site "Chess Lab"]
 [Family "e4 c5"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Black trades a wing pawn for a centre pawn and gets the half-open c-file. a6 stops Nb5 and prepares queenside expansion."]
 
-1. e4 {Black trades a wing pawn for a centre pawn and gets the half-open c-file. a6 stops Nb5 and prepares queenside expansion.} c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6 *
+1. e4 {White's most ambitious try.} c5 {The Sicilian. Black declines symmetry and fights for d4 from the side.} 2. Nf3 {Prepares d4 and develops.} d6 {Supports e5 later and opens the c8 bishop. The Najdorf move order.} 3. d4 {White strikes in the centre while Black's pieces are still at home.} cxd4 {Black must take, trading a wing pawn for a centre pawn — the Sicilian bargain.} 4. Nxd4 {Recaptures and centralises. White has more space; Black has the half-open c-file.} Nf6 {Develops and hits e4, forcing White to attend to the centre.} 5. Nc3 {Defends e4 and develops.} a6 {The Najdorf move. It stops Nb5 and Bb5, and prepares b5 and queenside play.} *
 
 [Event "Caro-Kann, Classical"]
 [Site "Chess Lab"]
 [Family "e4 c6"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Solid as a brick. Unlike the French, Black develops the light-squared bishop outside the pawn chain before playing e6."]
 
-1. e4 {Solid as a brick. Unlike the French, Black develops the light-squared bishop outside the pawn chain before playing e6.} c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Bf5 5. Ng3 Bg6 6. h4 h6 *
+1. e4 {The open game.} c6 {The Caro-Kann. Modest-looking, but it supports d5 with a pawn rather than a piece.} 2. d4 {Builds the big centre.} d5 {Now Black hits e4 with full support behind it.} 3. Nc3 {Defends e4 with a piece and develops.} dxe4 {Black resolves the tension and removes White's centre pawn.} 4. Nxe4 {Recaptures and centralises the knight.} Bf5 {The whole point of the Caro-Kann: the bishop leaves *before* e6 shuts it in. This is what the French cannot do.} 5. Ng3 {Attacks the bishop and gains time.} Bg6 {The bishop keeps the diagonal and stays safe.} 6. h4 {Gains kingside space and threatens to trap the bishop with h5.} h6 {Gives the bishop an escape square and stops h5 in its tracks.} *
 
 [Event "French Defence"]
 [Site "Chess Lab"]
 [Family "e4 e6"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Concede space, then hit the base of White's chain with c5 and f6. Your light-squared bishop is the problem piece."]
 
-1. e4 {Concede space, then hit the base of White's chain with c5 and f6. Your light-squared bishop is the problem piece.} e6 2. d4 d5 3. Nc3 Nf6 4. Bg5 Be7 5. e5 Nfd7 *
+1. e4 {The king's pawn opening.} e6 {The French. It prepares d5 with support, at the cost of shutting in the c8 bishop.} 2. d4 {Occupies the centre.} d5 {The thematic strike. Black challenges e4 at once.} 3. Nc3 {Defends e4 and develops toward the centre.} Nf6 {Attacks e4 a second time and develops.} 4. Bg5 {Pins the knight so the pressure on e4 is only apparent, not real.} Be7 {Breaks the pin by interposing, and prepares to castle.} 5. e5 {White gains space and kicks the knight, gaining time.} Nfd7 {Retreating to d7 keeps the knight useful and prepares c5 against the pawn chain.} *
 
 [Event "Queen's Gambit Declined"]
 [Site "Chess Lab"]
 [Family "d4 d5"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Not really a gambit: after dxc5 White regains the pawn. Declining with e6 keeps a rock-solid centre."]
 
-1. d4 {Not really a gambit: after dxc5 White regains the pawn. Declining with e6 keeps a rock-solid centre.} d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 *
+1. d4 {The queen's pawn opening: a slower, more strategic game.} d5 {Black claims the centre in kind.} 2. c4 {The Queen's Gambit. Not a true gambit — after dxc4 White regains the pawn.} e6 {Declining. The pawn holds d5 and Black keeps a solid centre.} 3. Nc3 {Develops and adds a third attacker to d5.} Nf6 {Defends d5 and develops.} 4. Bg5 {Pins the knight and increases the pressure on d5.} Be7 {Unpins by blocking, and prepares to castle.} 5. e3 {Modest, but it opens the f1 bishop and solidifies d4.} O-O {King to safety.} 6. Nf3 {Develops the last minor piece and supports the centre.} h6 {Asks the bishop a question and gives the king air on the back rank.} *
 
 [Event "London System"]
 [Site "Chess Lab"]
 [Family "d4 d5"]
 [PlayAs "White"]
 [Result "*"]
+[Summary "Same setup against almost anything. Get the bishop outside the pawn chain before e3 or you'll bury it."]
 
-1. d4 {Same setup against almost anything. Get the bishop outside the pawn chain before e3 or you'll bury it.} d5 2. Nf3 Nf6 3. Bf4 e6 4. e3 c5 5. c3 Nc6 6. Nbd2 Bd6 *
+1. d4 {The queen's pawn opening.} d5 {Black takes the centre.} 2. Nf3 {Develops and controls e5.} Nf6 {Develops and controls e4. Both sides are staking out squares.} 3. Bf4 {The London bishop. Get it outside the pawn chain *before* e3, or you bury it.} e6 {Develops and prepares to challenge the centre.} 4. e3 {Now e3 is right: the bishop is already out, so the pawn shuts in nothing.} c5 {Challenges d4 and opens the queen's diagonal.} 5. c3 {Supports d4 so the centre holds when Black pushes.} Nc6 {Develops and adds another attacker to d4.} 6. Nbd2 {The knight goes to d2, not c3, so the c-pawn keeps supporting d4.} Bd6 {Contests the bishop's diagonal — this is Black's main way to fight the London.} *
 
 [Event "King's Indian Defence"]
 [Site "Chess Lab"]
 [Family "d4 Nf6"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Hand White the centre, then blow it up. Black castles fast and storms the kingside with f5."]
 
-1. d4 {Hand White the centre, then blow it up. Black castles fast and storms the kingside with f5.} Nf6 2. c4 g6 3. Nc3 Bg7 4. e4 d6 5. Nf3 O-O 6. Be2 e5 *
+1. d4 {The queen's pawn opening.} Nf6 {Black develops and watches the centre from a distance rather than occupying it.} 2. c4 {Grabs more space.} g6 {Prepares the fianchetto: the bishop will hit the long diagonal.} 3. Nc3 {Develops and supports e4.} Bg7 {The King's Indian bishop. It aims straight through the centre at White's queenside.} 4. e4 {White builds the ideal big centre — exactly what Black invited.} d6 {Supports e5, the break Black is aiming for.} 5. Nf3 {Defends the centre and prepares to castle.} O-O {King to safety, ready for the break.} 6. Be2 {A modest square, but it keeps everything defended.} e5 {The whole point: Black finally strikes at the centre he let White build.} *
 
 [Event "Nimzo-Indian"]
 [Site "Chess Lab"]
 [Family "d4 Nf6"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Pin the knight, damage the structure, play on the light squares. A favourite of positional players."]
 
-1. d4 {Pin the knight, damage the structure, play on the light squares. A favourite of positional players.} Nf6 2. c4 e6 3. Nc3 Bb4 4. e3 O-O 5. Bd3 d5 6. Nf3 c5 *
+1. d4 {The queen's pawn opening.} Nf6 {Develops and controls e4.} 2. c4 {Grabs space and supports d5 ideas.} e6 {Prepares d5 and opens the f8 bishop.} 3. Nc3 {Develops and fights for e4 — the square this whole opening is about.} Bb4 {The Nimzo bishop. It pins the knight, so White's grip on e4 is loosened.} 4. e3 {Solid. It supports d4 and opens the f1 bishop.} O-O {King to safety while the pin does its work.} 5. Bd3 {Develops toward the kingside and supports e4 once more.} d5 {Black stakes his own claim in the centre.} 6. Nf3 {Develops and supports d4.} c5 {Challenges the centre from the side, the standard Nimzo plan.} *
 
 [Event "Légal's Mate"]
 [Site "Chess Lab"]
 [Family "Traps"]
 [PlayAs "White"]
 [Result "*"]
+[Summary "White gives up the queen to mate with three minor pieces. The trap springs because Black grabs the queen instead of taking the knight."]
 
-1. e4 {White gives up the queen to mate with three minor pieces. The trap springs because Black grabs the queen instead of taking the knight.} e5 2. Nf3 Nc6 3. Bc4 d6 4. Nc3 Bg4 5. h3 Bh5 6. Nxe5 Bxd1 7. Bxf7+ Ke7 8. Nd5# *
+1. e4 {The open game.} e5 {Symmetrical reply.} 2. Nf3 {Develops and attacks e5.} Nc6 {Defends.} 3. Bc4 {The Italian bishop, aiming at f7.} d6 {Solid, but passive — it shuts in the f8 bishop for now.} 4. Nc3 {Develops and adds pressure to e4 and d5.} Bg4 {Pinning the knight. It looks strong, but the pin is not real — and that is the whole trap.} 5. h3 {Asks the bishop a question. Black should probably retreat to d7 or take.} Bh5 {Keeping the pin. Natural, and the losing move.} 6. Nxe5 {The point. It looks like White has blundered the queen — the pin was an illusion.} Bxd1 {Black takes the queen and loses. Nxe5 first was the way out.} 7. Bxf7+ {Check, and the king cannot go to a safe square.} Ke7 {Forced.} 8. Nd5# {Mate. Three minor pieces do the work of a queen — the reason to look at pieces, not material.} *
 
 [Event "Fried Liver Attack"]
 [Site "Chess Lab"]
 [Family "Traps"]
 [PlayAs "White"]
 [Result "*"]
+[Summary "White sacs a knight to drag the king out. Black must know the Traxler or the Kd5 defence to survive."]
 
-1. e4 {White sacs a knight to drag the king out. Black must know the Traxler or the Kd5 defence to survive.} e5 2. Nf3 Nc6 3. Bc4 Nf6 4. Ng5 d5 5. exd5 Nxd5 6. Nxf7 Kxf7 7. Qf3+ Ke6 8. Nc3 *
+1. e4 {The open game.} e5 {The symmetrical reply.} 2. Nf3 {Attacks e5.} Nc6 {Defends.} 3. Bc4 {Aiming at f7 from the start.} Nf6 {The Two Knights. Active, but it allows what follows.} 4. Ng5 {Attacks f7 twice. Crude, but it must be answered precisely.} d5 {The right idea — counterattack rather than defend f7 passively.} 5. exd5 {Opens the position while Black's king is still in the middle.} Nxd5 {Recapturing with the knight walks into the sacrifice. Nb4 or the Traxler avoid it.} 6. Nxf7 {The Fried Liver. The knight is given up to drag the king into the open.} Kxf7 {Forced — and now the king has no shelter for the rest of the game.} 7. Qf3+ {Check, hitting the loose knight on d5 at the same time.} Ke6 {The only move. The king must walk further forward.} 8. Nc3 {Bringing the last piece in. White has two pawns and a raging attack for the piece.} *
 
 [Event "Englund Gambit Trap"]
 [Site "Chess Lab"]
 [Family "Traps"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "The trap Black is hoping for. If White plays Qd2 the queen gets trapped on the back rank."]
 
-1. d4 {The trap Black is hoping for. If White plays Qd2 the queen gets trapped on the back rank.} e5 2. dxe5 Nc6 3. Nf3 Qe7 4. Bf4 Qb4+ 5. Bd2 Qxb2 6. Bc3 Bb4 7. Qd2 Bxc3 8. Qxc3 Qc1# *
+1. d4 {The queen's pawn opening.} e5 {The Englund Gambit. Objectively dubious, but it sets a trap worth knowing from both sides.} 2. dxe5 {Accepting is critical and fine.} Nc6 {Attacks the pawn on e5 and develops.} 3. Nf3 {Defends the pawn. Natural.} Qe7 {Attacks e5 again and eyes the b4 square.} 4. Bf4 {Defends once more, and looks perfectly sensible.} Qb4+ {Check, forking the b2 pawn at the same time.} 5. Bd2 {Blocking the check. This is already the wrong idea.} Qxb2 {Grabbing the pawn and attacking the rook.} 6. Bc3 {Defends the rook and looks like it holds everything.} Bb4 {Pinning the bishop. Now White has no good answer.} 7. Qd2 {The losing move — and the one the whole gambit is fishing for.} Bxc3 {Removing the defender.} 8. Qxc3 {Forced recapture.} Qc1# {Mate on the back rank. The queen was never able to leave d2.} *
 
 [Event "Blackburne Shilling Trap"]
 [Site "Chess Lab"]
 [Family "Traps"]
 [PlayAs "Black"]
 [Result "*"]
+[Summary "Named after the pennies Blackburne won with it. White's greed on f7 costs the game."]
 
-1. e4 {Named after the pennies Blackburne won with it. White's greed on f7 costs the game.} e5 2. Nf3 Nc6 3. Bc4 Nd4 4. Nxe5 Qg5 5. Nxf7 Qxg2 6. Rf1 Qxe4+ 7. Be2 Nf3# *
+1. e4 {The open game.} e5 {Symmetry.} 2. Nf3 {Develops with a threat.} Nc6 {Defends.} 3. Bc4 {The Italian bishop.} Nd4 {A provocative move. Black invites Nxe5, which looks like a free pawn.} 4. Nxe5 {Taking the bait. Nxd4 is simply good for White instead.} Qg5 {Attacking the knight and g2 at once. Now White is already in trouble.} 5. Nxf7 {Grabbing the rook, which loses. Bxf7+ first was the way to survive.} Qxg2 {Taking with check on the way to the rook.} 6. Rf1 {Saving the rook, but the king is stuck in the middle.} Qxe4+ {Check, picking up the pawn and keeping the initiative.} 7. Be2 {Blocking the check — forced.} Nf3# {Mate. The knight, bishop and queen combine on a king that never castled.} *

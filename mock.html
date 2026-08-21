@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chess Lab (mocked backend)</title>
+    <script>
+      /* Stand in for the Tauri bridge so the whole UI can be exercised in a
+         plain browser. Without this, every screen that needs data falls back to
+         its empty state and the real render paths are never reached. */
+      const PUZZLES = [
+        { id: "sXvRs", fen: "1r2r1k1/1b5p/p2R2p1/1p2p3/4N3/P7/1P3P1P/4R1K1 b - - 3 28",
+          moves: ["b8d8","e4f6","g8h8","f6e8"], rating: 945, popularity: 91,
+          themes: ["crushing","endgame","fork","short"] },
+        { id: "FpLdo", fen: "r5k1/5r1p/1p2R1p1/pP3p2/P4b2/3P4/1B4PP/3R2K1 w - - 0 30",
+          moves: ["e6b6","f4e3","g1f1","e3b6"], rating: 952, popularity: 100,
+          themes: ["advantage","endgame","fork","short"] },
+        { id: "Yo3pA", fen: "3r2k1/p4ppp/2N1p3/3p4/3Pb3/1P4P1/P2r3P/R3R1K1 b - - 4 24",
+          moves: ["d8c8","c6e7","g8f8","e7c8"], rating: 757, popularity: 100,
+          themes: ["advantage","endgame","fork","short"] },
+      ];
+      const store = {};
+      const handlers = {
+        boot: () => ({ puzzles: 20000, threads: 10, hash_mb: 1024 }),
+        kv_get: ({ key }) => store[key] ?? null,
+        kv_set: ({ key, value }) => { store[key] = value; return null; },
+        profile_stats: () => ({ attempts: 13, solved: 4, due_now: 0, distinct: 6,
+                                blunders: 0, blunders_due: 0, games: 0, games_unreviewed: 0 }),
+        pick_puzzles: () => PUZZLES.slice(),
+        due_reviews: () => [],
+        puzzle_by_id: ({ id }) => PUZZLES.find((p) => p.id === id) ?? null,
+        puzzle_themes: () => [["fork", 900], ["pin", 700], ["backRankMate", 400], ["skewer", 300]],
+        theme_accuracy: () => [["fork", 10, 4], ["pin", 6, 5]],
+        record_attempt: () => null,
+        save_blunders: () => 0,
+        due_blunders: () => [],
+        all_blunders: () => [],
+        grade_blunder: () => null,
+        forget_blunder: () => null,
+        list_games: () => [],
+        save_game: () => 1,
+        mark_reviewed: () => null,
+        delete_game: () => null,
+        analyse: () => 1,
+        play: () => 1,
+        stop_engine: () => null,
+      };
+      window.__TAURI_INTERNALS__ = {
+        invoke: (cmd, args) => {
+          // The event plugin is used for engine streaming; nothing to emit here.
+          if (cmd.startsWith("plugin:event|")) return Promise.resolve(0);
+          const h = handlers[cmd];
+          if (!h) return Promise.reject(new Error("mock: no handler for " + cmd));
+          return Promise.resolve(h(args || {}));
+        },
+        transformCallback: (cb) => cb,
+      };
+    </script>
+  </head>
+  <body><div id="root"></div><script type="module" src="/src/main.jsx"></script></body>
+</html>
