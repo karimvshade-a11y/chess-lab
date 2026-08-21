@@ -122,6 +122,9 @@ export default function Board({
         flex: "0 0 auto",
         border: `2px solid #2E3260`,
         boxSizing: "content-box",
+        /* Room for the coordinates, which are positioned outside the board. */
+        marginLeft: 18,
+        marginBottom: 19,
       }}
     >
       <div ref={host} style={{ width: "100%", height: "100%" }} />

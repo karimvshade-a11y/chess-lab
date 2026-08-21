@@ -41,6 +41,9 @@ export function material(board) {
  * lead, which reads as a contradiction.
  */
 export default function Captured({ pos, player, align = "left" }) {
+  /* Unlabelled, a row of pieces reads as "what I still have" rather than
+     "what I have taken" — which is confusing when the board plainly shows no
+     such piece. Saying whose haul it is removes the ambiguity. */
   const m = material(pos.board);
   const taken = player === "w" ? m.lostBlack : m.lostWhite;
   const edge = player === "w" ? m.white - m.black : m.black - m.white;
@@ -58,6 +61,10 @@ export default function Captured({ pos, player, align = "left" }) {
         justifyContent: align === "right" ? "flex-end" : "flex-start",
       }}
     >
+      <span style={label({ opacity: 0.75, whiteSpace: "nowrap" })}>
+        {player === "w" ? "white took" : "black took"}
+      </span>
+
       <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
         {ORDER.map((t) =>
           taken[t] > 0 ? (
@@ -85,7 +92,7 @@ export default function Captured({ pos, player, align = "left" }) {
             </span>
           ) : null
         )}
-        {!any && <span style={label({ opacity: 0.5 })}>no captures</span>}
+        {!any && <span style={label({ opacity: 0.45 })}>nothing</span>}
       </div>
 
       {advantage > 0 && (

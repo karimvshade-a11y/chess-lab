@@ -7,10 +7,12 @@ import Openings from "./train/Openings.jsx";
 import Progress from "./train/Progress.jsx";
 import Review from "./train/Review.jsx";
 import Blunders from "./train/Blunders.jsx";
+import Learn from "./train/Learn.jsx";
 import { boot, kvGet, kvSet, profileStats } from "./stockfish/client.js";
 import { setMuted, unlock, play as sfx } from "./ui/sound.js";
 
 const TABS = [
+  ["learn", "Learn"],
   ["tactics", "Tactics"],
   ["blunders", "My Blunders"],
   ["openings", "Openings"],
@@ -186,6 +188,11 @@ export default function App() {
 
         {ready && tab === "tactics" && (
           <Tactics rating={rating} setRating={setRating} onSolved={onSolved} theme={theme} setTheme={setTheme} />
+        )}
+        {ready && tab === "learn" && (
+          <Learn
+            onPractise={(themeKey) => { setTheme(themeKey); setTab("tactics"); }}
+          />
         )}
         {ready && tab === "blunders" && <Blunders onGraded={refreshBook} />}
         {ready && tab === "openings" && <Openings />}

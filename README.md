@@ -9,6 +9,7 @@ Everything — engine, puzzles, lessons, and your progress — lives on the mach
 
 | Tab | What it is |
 | --- | --- |
+| **Learn** | A library of chess techniques — forks, pins, skewers, mating patterns — each with what it is, how to spot it, a worked example from a real game, and a button that drills it. |
 | **Tactics** | 20,000 rated Lichess puzzles with spaced repetition. Your rating moves with an Elo update against each puzzle's rating. |
 | **Openings** | Recall drills built from PGN lessons — you play the line rather than watch it. |
 | **Play** | Sparring against Stockfish 18, from ~1320 Elo to full strength. |
@@ -42,6 +43,7 @@ curl -L --create-dirs -o .assets/puzzles.csv.zst \
 
 npm run puzzles   # 6.1M puzzles in  ->  20,000 sampled out (4 MB)
 npm run lessons   # opening book     ->  src/data/lessons.pgn
+npm run examples  # worked examples  ->  src/train/examples.js
 ```
 
 Then:
@@ -140,6 +142,19 @@ against no data and died the moment a puzzle arrived.
 
 Neither harness is part of the production build; Vite only bundles
 `index.html`.
+
+## Where the teaching content lives
+
+- `src/train/themes.js` — what each tactical technique is and how to spot it.
+  Hand-written; this is the Learn tab and the Tactics explanations.
+- `scripts/opening-notes.js` — a note for every move of every opening lesson,
+  baked into `src/data/lessons.pgn` by `npm run lessons`.
+- `src/train/examples.js` — **generated**, do not edit. `npm run examples` picks
+  one worked position per technique out of the puzzle database and derives the
+  explanation from what the move actually does: whether it checks, what it
+  takes, what it hits on arrival. Selection is filtered so the example really
+  demonstrates the idea — a fork example must attack two pieces at once, and a
+  mate-in-one is only used for a mating pattern.
 
 ## Tuning
 

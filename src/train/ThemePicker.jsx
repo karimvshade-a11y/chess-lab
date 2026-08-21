@@ -7,6 +7,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { C, MONO, label, card } from "../ui/theme.js";
 import { puzzleThemes, themeAccuracy } from "../stockfish/client.js";
+import { prettyTheme as pretty } from "./themes.js";
 
 /* Tags describing difficulty or phase rather than a tactical idea; useless as
    a training filter. */
@@ -16,8 +17,7 @@ const NOT_A_THEME = new Set([
   "mateIn1", "mateIn2", "mateIn3", "mateIn4", "mateIn5",
 ]);
 
-export const prettyTheme = (t) =>
-  t.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/^./, (c) => c.toUpperCase());
+export const prettyTheme = pretty;
 
 export default function ThemePicker({ value, onChange }) {
   const [themes, setThemes] = useState([]);

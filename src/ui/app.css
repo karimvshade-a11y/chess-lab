@@ -4,7 +4,7 @@
    padding (~60). Without it the board is taller than the space it has and
    the lower capture strip is cut off by the window edge. */
 :root {
-  --board: min(calc(100vh - 280px), 820px);
+  --board: min(calc(100vh - 300px), 800px);
   --panel: 320px;
 }
 

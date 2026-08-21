@@ -8,6 +8,8 @@ import { C, MONO, label, card } from "../ui/theme.js";
 import { legalMoves, uciOf, makeMove, sqName, parseFEN, isMate, inCheck, START_FEN } from "../engine/core.js";
 import { parsePGN, mainline } from "../engine/pgn.js";
 import { playMove, play as sfx } from "../ui/sound.js";
+import { play as enginePlay, onDone, stop } from "../stockfish/client.js";
+import { toFEN, isStalemate, insufficientMaterial } from "../engine/core.js";
 import lessonsText from "../data/lessons.pgn?raw";
 
 function loadLessons(text) {
@@ -49,6 +51,14 @@ export default function Openings() {
   /* The note belonging to the move just played, so every move gets explained
      as it happens rather than one summary at the start of the lesson. */
   const [lastNote, setLastNote] = useState(null);
+  /* Once the book line runs out the game is still there to be played. Handing
+     it to the engine turns a memorised sequence into an actual game, which is
+     the point of learning the opening in the first place. */
+  const [freePlay, setFreePlay] = useState(false);
+  const [thinking, setThinking] = useState(false);
+  const [sheet, setSheet] = useState([]);
+  const posRef = useRef(pos);
+  posRef.current = pos;
   const timers = useRef([]);
 
   const lesson = lessons[idx];
@@ -66,11 +76,15 @@ export default function Openings() {
     setDone(false);
     setReveal(false);
     setLastNote(null);
+    setFreePlay(false);
+    setThinking(false);
+    setSheet([]);
+    stop();
   };
 
   // When the line opens with the other side, play their move first.
   useEffect(() => {
-    if (!lesson) return;
+    if (!lesson || freePlay) return;
     if (step >= lesson.line.length) { setDone(true); return; }
     const node = lesson.line[step];
     const mover = pos.turn;
@@ -89,8 +103,58 @@ export default function Openings() {
     return () => clearTimeout(t);
   }, [lesson, step, pos, mySide]);
 
+  /* --- free play: you against the engine, from wherever the line stopped --- */
+  const over = freePlay
+    ? isMate(pos)
+      ? `${pos.turn === "w" ? "Black" : "White"} wins by checkmate`
+      : isStalemate(pos)
+      ? "Stalemate"
+      : insufficientMaterial(pos)
+      ? "Draw by insufficient material"
+      : null
+    : null;
+
+  useEffect(() => {
+    if (!freePlay || over || pos.turn === mySide) return;
+    setThinking(true);
+    enginePlay(toFEN(pos), { elo: 1800, movetime: 500 }).catch(() => setThinking(false));
+  }, [freePlay, pos, over, mySide]);
+
+  useEffect(
+    () =>
+      onDone(({ best }) => {
+        setThinking(false);
+        if (!best) return;
+        const p = posRef.current;
+        const mv = legalMoves(p).find((m) => uciOf(m) === best);
+        if (!mv) return;
+        const after = makeMove(p, mv);
+        setSheet((l) => [...l, { san: toSAN(p, mv), num: p.turn === "w" ? p.full : null }]);
+        setPos(after);
+        setLastMove({ from: best.slice(0, 2), to: best.slice(2, 4) });
+        playMove(p, after, mv, { isMate: isMate(after), inCheck: inCheck(after, after.turn) });
+      }),
+    []
+  );
+
   const onMove = (from, to) => {
-    if (!lesson || done) return;
+    if (!lesson) return;
+
+    // Past the book line: any legal move is fine, the engine replies.
+    if (freePlay) {
+      if (over || pos.turn !== mySide) return;
+      const cands = legalMoves(pos).filter((m) => sqName(m.from) === from && sqName(m.to) === to);
+      if (!cands.length) return;
+      const mv = cands.find((m) => !m.promo || m.promo === "q") || cands[0];
+      const after = makeMove(pos, mv);
+      setSheet((l) => [...l, { san: toSAN(pos, mv), num: pos.turn === "w" ? pos.full : null }]);
+      setPos(after);
+      setLastMove({ from, to });
+      playMove(pos, after, mv, { isMate: isMate(after), inCheck: inCheck(after, after.turn) });
+      return;
+    }
+
+    if (done) return;
     const node = lesson.line[step];
     if (!node) return;
     const cands = legalMoves(pos).filter((m) => sqName(m.from) === from && sqName(m.to) === to);
@@ -178,7 +242,9 @@ export default function Openings() {
         <div style={card()}>
           <div style={label()}>status</div>
           <div style={{ fontFamily: MONO, fontSize: 15, marginTop: 6, color: done ? C.green : wrong ? C.red : C.ink }}>
-            {done
+            {freePlay
+              ? over || (thinking ? "Engine thinking…" : pos.turn === mySide ? "Your move" : "…")
+              : done
               ? "You played the whole line."
               : wrong
               ? "Not this line — try again."
@@ -189,8 +255,37 @@ export default function Openings() {
 
         </div>
 
+        {done && !freePlay && lesson && (
+          <div style={card({ borderColor: C.indigo })}>
+            <div style={label()}>the book ends here</div>
+            <p style={{ fontFamily: MONO, fontSize: 12.5, color: C.ink, margin: "6px 0 10px", lineHeight: 1.7 }}>
+              Knowing the moves is only half of it — the hard part is the game that follows.
+              Play it out against the engine from this exact position.
+            </p>
+            <Small onClick={() => { setFreePlay(true); setLastNote(null); }} primary>
+              Play on from here
+            </Small>
+          </div>
+        )}
+
+        {freePlay && sheet.length > 0 && (
+          <div style={card({ maxHeight: 170, overflowY: "auto" })}>
+            <div style={label()}>since the book ended</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 8px", marginTop: 6, fontFamily: MONO, fontSize: 12 }}>
+              {sheet.map((m, i) => (
+                <span key={i}>
+                  {m.num ? <span style={{ color: C.mute }}>{m.num}.</span> : null}
+                  {m.san}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: 6 }}>
-          <Small onClick={() => setReveal((r) => !r)}>{reveal ? "hide" : "explain this move"}</Small>
+          {!freePlay && (
+            <Small onClick={() => setReveal((r) => !r)}>{reveal ? "hide" : "explain this move"}</Small>
+          )}
           <Small onClick={() => restart()}>restart</Small>
         </div>
 
@@ -218,14 +313,17 @@ export default function Openings() {
   );
 }
 
-function Small({ children, onClick }) {
+function Small({ children, onClick, primary }) {
   return (
     <button
       onClick={onClick}
       style={{
-        ...label({ color: C.ink }), background: "transparent",
-        border: `1px solid ${C.line}`, padding: "8px 10px",
+        ...label({ color: primary ? "#F7F5EF" : C.ink }),
+        background: primary ? C.indigo : "transparent",
+        border: `1px solid ${primary ? C.indigo : C.line}`,
+        padding: primary ? "10px 12px" : "8px 10px",
         borderRadius: 2, cursor: "pointer", flex: 1,
+        width: primary ? "100%" : undefined,
       }}
     >
       {children}

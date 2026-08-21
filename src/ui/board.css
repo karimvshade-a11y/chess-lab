@@ -33,38 +33,39 @@ cg-board square.oc.move-dest {
   background: radial-gradient(transparent 0%, transparent 78%, rgba(20, 22, 28, 0.34) 80%);
 }
 
-/* The defaults offset the coordinate strips (files by 24px, ranks by -20px),
-   which slides every letter a square and a half to the right of its column. */
+/* Coordinates live OUTSIDE the board, in the padding the wrapper reserves for
+   them. Chessground's defaults put them inside and offset (files by 24px,
+   ranks by -20px), which both misaligns them and lays the letters over the
+   pieces on the first rank. The wrapper's padding is what gives them room. */
 .cg-wrap coords {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 10px;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   opacity: 1;
 }
 .cg-wrap coords.files {
   left: 0;
-  bottom: 2px;
-  height: 14px;
+  bottom: -17px;
+  height: 16px;
   width: 100%;
   text-align: center;
 }
 .cg-wrap coords.ranks {
-  left: 3px;
+  left: -16px;
   top: 0;
   height: 100%;
-  width: 12px;
+  width: 13px;
+  text-align: right;
 }
 .cg-wrap coords.ranks coord {
   transform: translateY(30%);
 }
 
-/* Chessground tags each coordinate with the colour of the square it sits on,
-   so give each one the opposite tone rather than a single grey. */
-.cg-wrap coords coord.white {
-  color: rgba(20, 22, 28, 0.55);
-}
+/* Outside the board they sit on paper, so one tone serves both. */
+.cg-wrap coords coord,
+.cg-wrap coords coord.white,
 .cg-wrap coords coord.black {
-  color: rgba(247, 245, 239, 0.75);
+  color: rgba(110, 107, 99, 0.95);
 }
 
 /* ---- check and checkmate ----
